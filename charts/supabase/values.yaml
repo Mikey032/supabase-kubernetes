@@ -62,6 +62,8 @@ secret:
   # secret used to access the studio dashboard
   # leave it empty to disable dashboard authentication
   dashboard:
+    # basic or openid
+    auth_type: basic
     # username: ""
     # password: ""
     # specify existing secret, which takes precedence over variables above
@@ -794,10 +796,13 @@ kong:
     KONG_DECLARATIVE_CONFIG: /usr/local/kong/kong.yml
     # https://github.com/supabase/cli/issues/14
     KONG_DNS_ORDER: LAST,A,CNAME
-    KONG_PLUGINS: request-transformer,cors,key-auth,acl,basic-auth
+    KONG_PLUGINS: request-transformer,cors,key-auth,acl,basic-auth,openid-connect
     KONG_NGINX_PROXY_PROXY_BUFFER_SIZE: 160k
     KONG_NGINX_PROXY_PROXY_BUFFERS: 64 160k
     KONG_LOG_LEVEL: warn
+  envFrom: []
+    # - secretRef:
+    #     name: env-secret
   ingress:
     enabled: true
     className: "nginx"

@@ -16,8 +16,14 @@ data:
     sed \
     -e "s/\${SUPABASE_ANON_KEY}/${SUPABASE_ANON_KEY}/" \
     -e "s/\${SUPABASE_SERVICE_KEY}/${SUPABASE_SERVICE_KEY}/" \
+    {{- if eq .Values.secret.dashboard.auth_type "basic" }}
     -e "s/\${DASHBOARD_USERNAME}/${DASHBOARD_USERNAME}/" \
     -e "s/\${DASHBOARD_PASSWORD}/${DASHBOARD_PASSWORD}/" \
+    {{- else if eq .Values.secret.dashboard.auth_type "openid" }}
+    -e "s/\${OPENID_ISSUER}/${OPENID_ISSUER}/" \
+    -e "s/\${OPENID_CLIENT_ID}/${OPENID_CLIENT_ID}/" \
+    -e "s/\${OPENID_CLIENT_SECRET}/${OPENID_CLIENT_SECRET}/" \
+    {{- end }}
     /usr/local/kong/template.yml \
     > /usr/local/kong/kong.yml
 
@@ -27,7 +33,7 @@ data:
     _transform: true
 
     consumers:
-    {{- if .Values.secret.dashboard }}
+    {{- if eq .Values.secret.dashboard.auth_type "basic" }}
       - username: DASHBOARD
     {{- end }}
       - username: anon
@@ -41,7 +47,7 @@ data:
         group: anon
       - consumer: service_role
         group: admin
-    {{- if .Values.secret.dashboard }}
+    {{- if eq .Values.secret.dashboard.auth_type "basic" }}
     basicauth_credentials:
       - consumer: DASHBOARD
         username: ${DASHBOARD_USERNAME}
@@ -223,11 +229,27 @@ data:
             strip_path: true
             paths:
               - /
-    {{- if .Values.secret.dashboard }}
+              - /oidc-callback
         plugins:
           - name: cors
+    {{- if eq .Values.secret.dashboard.auth_type "basic" }}
           - name: basic-auth
             config:
               hide_credentials: true
+    {{- else if eq .Values.secret.dashboard.auth_type "openid" }}
+          - name: openid-connect
+            config:
+              issuer: "${OPENID_ISSUER}"
+              client_id:
+              - "${OPENID_CLIENT_ID}"
+              client_secret:
+              - "${OPENID_CLIENT_SECRET"
+              redirect_uri:
+              - "http://{{ include "supabase.studio.fullname" . }}:{{ .Values.studio.service.port }}/oidc-callback"
+              scopes:
+              - openid
+              - email
+              - ${OPENID_CLIENT_ID}/.default
+              verify_parameters: false
     {{- end }}
 {{- end }}

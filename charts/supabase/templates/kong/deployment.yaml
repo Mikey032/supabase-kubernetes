@@ -61,7 +61,7 @@ spec:
                   name: {{ include "supabase.secret.jwt" . }}
                   key: serviceKey
                   {{- end }}
-            {{- if .Values.secret.dashboard }}
+            {{- if eq .Values.secret.dashboard.auth_type "basic" }}
             - name: DASHBOARD_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -83,6 +83,10 @@ spec:
                   key: password
                   {{- end }}
             {{- end }}
+          {{- with .Values.kong.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- with .Values.kong.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
