@@ -229,7 +229,9 @@ data:
             strip_path: true
             paths:
               - /
+    {{- if eq .Values.secret.dashboard.auth_type "openid" }}
               - /oidc-callback
+    {{- end }}
         plugins:
           - name: cors
     {{- if eq .Values.secret.dashboard.auth_type "basic" }}
