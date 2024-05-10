@@ -86,18 +86,18 @@ spec:
             - name: OPENID_ISSUER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.secret.jwt.secretRef }}
-                  key: {{ .Values.secret.jwt.secretRefKey.openidIssuer | default "openidIssuer" }}
+                  name: {{ .Values.secret.dashboard.secretRef }}
+                  key: {{ .Values.secret.dashboard.secretRefKey.openidIssuer | default "openidIssuer" }}
             - name: OPENID_CLIENT_ID
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.secret.jwt.secretRef }}
-                  key: {{ .Values.secret.jwt.secretRefKey.openidClientId | default "openidClientId" }}
+                  name: {{ .Values.secret.dashboard.secretRef }}
+                  key: {{ .Values.secret.dashboard.secretRefKey.openidClientId | default "openidClientId" }}
             - name: OPENID_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.secret.jwt.secretRef }}
-                  key: {{ .Values.secret.jwt.secretRefKey.openidClientSecret | default "openidClientSecret" }}
+                  name: {{ .Values.secret.dashboard.secretRef }}
+                  key: {{ .Values.secret.dashboard.secretRefKey.openidClientSecret | default "openidClientSecret" }}
             {{- end }}
           {{- with .Values.kong.envFrom }}
           envFrom:
