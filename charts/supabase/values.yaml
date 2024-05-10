@@ -72,6 +72,9 @@ secret:
     secretRefKey:
       username: username
       password: password
+      openidIssuer: openidIssuer
+      openidClientId: openidClientId
+      openidClientSecret: openidClientSecret
   # S3 credentials for storage object bucket
   s3:
     # keyId: ""

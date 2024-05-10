@@ -82,6 +82,22 @@ spec:
                   name: {{ include "supabase.secret.dashboard" . }}
                   key: password
                   {{- end }}
+            {{- else if eq .Values.secret.dashboard.auth_type "openid" }}
+            - name: OPENID_ISSUER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.jwt.secretRef }}
+                  key: {{ .Values.secret.jwt.secretRefKey.openidIssuer | default "openidIssuer" }}
+            - name: OPENID_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.jwt.secretRef }}
+                  key: {{ .Values.secret.jwt.secretRefKey.openidClientId | default "openidClientId" }}
+            - name: OPENID_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.jwt.secretRef }}
+                  key: {{ .Values.secret.jwt.secretRefKey.openidClientSecret | default "openidClientSecret" }}
             {{- end }}
           {{- with .Values.kong.envFrom }}
           envFrom:
